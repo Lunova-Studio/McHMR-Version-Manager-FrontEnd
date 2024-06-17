@@ -31,14 +31,14 @@
           :model="searchform"
           class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
         >
-          <el-form-item label="版本号">
+          <el-form-item label="版本号" style="margin-bottom: 0px">
             <el-input
               v-model="searchform.keyWord"
               placeholder="请输入版本号"
               clearable
             />
           </el-form-item>
-          <el-form-item>
+          <el-form-item style="margin-bottom: 0px">
             <el-form-item>
               <el-button type="primary" @click="onSubmit">搜索</el-button>
               <el-button @click="onReset">重置</el-button>
@@ -62,7 +62,12 @@
           <el-col :span="6"><h3>版本列表</h3></el-col>
           <el-col
             :span="6"
-            style="display: flex; flex-direction: row; margin-right: 20px"
+            style="
+              display: flex;
+              flex-direction: row;
+              margin-right: 20px;
+              justify-content: end;
+            "
           >
             <el-button
               type="primary"
@@ -70,8 +75,12 @@
               @click="addVersionVisible = true"
               >新增版本</el-button
             >
-            <el-button type="danger" :icon="Delete">删除版本</el-button>
-            <el-button type="warning" :icon="Edit">修改版本</el-button>
+            <el-button v-show="false" type="danger" :icon="Delete"
+              >删除版本</el-button
+            >
+            <el-button v-show="false" type="warning" :icon="Edit"
+              >修改版本</el-button
+            >
           </el-col>
         </el-row>
         <div
@@ -129,11 +138,16 @@
       width="500"
       :before-close="addVersionHandleClose"
     >
-      <el-form :model="addForm" label-width="120px">
-        <el-form-item label="版本号">
+      <el-form
+        :model="addForm"
+        label-width="120px"
+        :rules="addRules"
+        ref="addFormRef"
+      >
+        <el-form-item label="版本号" prop="version">
           <el-input v-model="addForm.version" placeholder="请输入版本号" />
         </el-form-item>
-        <el-form-item label="版本介绍">
+        <el-form-item label="版本介绍" prop="description">
           <el-input
             v-model="addForm.description"
             placeholder="请输入版本介绍"
@@ -157,14 +171,14 @@
       :before-close="changeVersionHandleClose"
     >
       <el-form :model="changeForm" label-width="120px">
-        <el-form-item label="版本号">
+        <el-form-item label="版本号" prop="version">
           <el-input
             v-model="changeForm.version"
             placeholder="请输入版本号"
             disabled
           />
         </el-form-item>
-        <el-form-item label="版本介绍">
+        <el-form-item label="版本介绍" prop="desc">
           <el-input
             v-model="changeForm.description"
             placeholder="请输入版本介绍"
@@ -197,8 +211,8 @@ import {
   VersionChange
 } from "@/api/mchmr/version/index";
 import { message } from "@/utils/message";
-
 import { Plus, Delete, Edit } from "@element-plus/icons-vue";
+import { ElForm } from "element-plus";
 
 defineOptions({
   name: "Version"
@@ -250,27 +264,52 @@ const addForm = reactive<VersionCreate>({
 });
 const addVersionVisible = ref(false);
 
+const addRules = {
+  version: [
+    { required: true, message: "请输入版本号", trigger: "blur" },
+    {
+      pattern: /^(\d+)\.(\d+)\.(\d+)$/,
+      message: "版本号格式错误，如1.0.0",
+      trigger: "blur"
+    }
+  ],
+  description: [
+    { required: true, message: "请输入版本描述", trigger: "blur" },
+    { min: 1, max: 100, message: "长度在 1 到 100 个字符", trigger: "blur" }
+  ]
+};
+
+const addFormRef = ref<InstanceType<typeof ElForm>>();
+
 const addVersionSubmit = () => {
-  createNewVersionDialog.value = true;
-  createVersionApi(addForm)
-    .then((res: any) => {
-      console.log(res);
-      addVersionVisible.value = false;
-      createNewVersionDialog.value = false;
-      if (res.code === 0) {
-        onReset();
-        message("添加成功", {
-          type: "success"
+  addFormRef.value?.validate(valid => {
+    if (valid) {
+      createNewVersionDialog.value = true;
+      createVersionApi(addForm)
+        .then((res: any) => {
+          console.log(res);
+          addVersionVisible.value = false;
+          createNewVersionDialog.value = false;
+          if (res.code === 0) {
+            onReset();
+            message("添加成功", {
+              type: "success"
+            });
+          }
+        })
+        .catch(() => {
+          addVersionVisible.value = false;
+          createNewVersionDialog.value = false;
+          message("版本不能低于或等于活动版本", {
+            type: "warning"
+          });
         });
-      }
-    })
-    .catch(() => {
-      addVersionVisible.value = false;
-      createNewVersionDialog.value = false;
-      message("版本不能低于或等于活动版本", {
+    } else {
+      message("请填写完整信息", {
         type: "warning"
       });
-    });
+    }
+  });
 };
 
 // 分页数据
