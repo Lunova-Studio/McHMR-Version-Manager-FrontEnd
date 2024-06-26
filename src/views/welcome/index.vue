@@ -2,97 +2,63 @@
 defineOptions({
   name: "Welcome"
 });
-import {
-  ArrowRight,
-  CaretBottom,
-  CaretTop,
-  Warning
-} from "@element-plus/icons-vue";
+import { ref, onBeforeMount } from "vue";
+import { getApiUrlApi, generateApiUrlApi } from "@/api/mchmr/welcome/index";
+import { message } from "@/utils/message";
+
+const apiUrl = ref(null);
+
+const generateApiUrl = () => {
+  generateApiUrlApi().then(res => {
+    if (res.code === 200) {
+      message("操作成功", {
+        type: "success"
+      });
+    }
+  });
+};
+
+onBeforeMount(() => {
+  getApiUrlApi().then(res => {
+    if (res.code === 200) {
+      apiUrl.value = res.data.apiUrl;
+    }
+  });
+});
+
+const copyApiUrl = () => {};
 </script>
 
 <template>
-  <div>
-    <div class="home_top">
-      <div class="top_card">
-        <el-row :gutter="16">
-          <el-col :span="8">
-            <div class="statistic-card">
-              <el-statistic :value="98500">
-                <template #title>
-                  <div style="display: inline-flex; align-items: center">
-                    版本数量
-                    <el-tooltip
-                      effect="dark"
-                      content="这是你所有已发布版本的总数"
-                      placement="top"
-                    >
-                      <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                      </el-icon>
-                    </el-tooltip>
-                  </div>
-                </template>
-              </el-statistic>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="statistic-card">
-              <el-statistic :value="693700">
-                <template #title>
-                  <div style="display: inline-flex; align-items: center">
-                    玩家数量
-                    <el-tooltip
-                      effect="dark"
-                      content="这是你的服务器所有玩家的数量（根据客户端数量统计）"
-                      placement="top"
-                    >
-                      <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                      </el-icon>
-                    </el-tooltip>
-                  </div>
-                </template>
-              </el-statistic>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="statistic-card">
-              <el-statistic :value="72000" title="每日玩家下载量">
-                <template #title>
-                  <div style="display: inline-flex; align-items: center">
-                    每日玩家下载量
-                    <el-tooltip
-                      effect="dark"
-                      content="实时统计每天服务器的下载量"
-                      placement="top"
-                    >
-                      <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                      </el-icon>
-                    </el-tooltip>
-                  </div>
-                </template>
-              </el-statistic>
-              <div class="statistic-footer">
-                <div class="footer-item">
-                  <span>较昨日</span>
-                  <span class="green">
-                    16%
-                    <el-icon>
-                      <CaretTop />
-                    </el-icon>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
+  <div style="display: flex; flex-direction: row">
+    <el-input
+      placeholder="请生成 Open API 地址"
+      v-model="apiUrl"
+      :disabled="true"
+      style="width: 500px; margin-right: 15px"
+    />
+    <el-button @click="generateApiUrl">生成</el-button>
+    <el-button :disabled="apiUrl !== null ? false : true" @click="copyApiUrl"
+      >复制</el-button
+    >
   </div>
 </template>
 
-<style>
+<style scoped lang="scss">
+.home_top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.top_card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+}
 .demonstration {
   color: var(--el-text-color-secondary);
 }
