@@ -2,100 +2,17 @@
 defineOptions({
   name: "Welcome"
 });
-<<<<<<< Updated upstream
-import {
-  ArrowRight,
-  CaretBottom,
-  CaretTop,
-  Warning
-} from "@element-plus/icons-vue";
-</script>
-
-<template>
-  <div>
-    <div class="home_top">
-      <div class="top_card">
-        <el-row :gutter="16">
-          <el-col :span="8">
-            <div class="statistic-card">
-              <el-statistic :value="98500">
-                <template #title>
-                  <div style="display: inline-flex; align-items: center">
-                    版本数量
-                    <el-tooltip
-                      effect="dark"
-                      content="这是你所有已发布版本的总数"
-                      placement="top"
-                    >
-                      <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                      </el-icon>
-                    </el-tooltip>
-                  </div>
-                </template>
-              </el-statistic>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="statistic-card">
-              <el-statistic :value="693700">
-                <template #title>
-                  <div style="display: inline-flex; align-items: center">
-                    玩家数量
-                    <el-tooltip
-                      effect="dark"
-                      content="这是你的服务器所有玩家的数量（根据客户端数量统计）"
-                      placement="top"
-                    >
-                      <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                      </el-icon>
-                    </el-tooltip>
-                  </div>
-                </template>
-              </el-statistic>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="statistic-card">
-              <el-statistic :value="72000" title="每日玩家下载量">
-                <template #title>
-                  <div style="display: inline-flex; align-items: center">
-                    每日玩家下载量
-                    <el-tooltip
-                      effect="dark"
-                      content="实时统计每天服务器的下载量"
-                      placement="top"
-                    >
-                      <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                      </el-icon>
-                    </el-tooltip>
-                  </div>
-                </template>
-              </el-statistic>
-              <div class="statistic-footer">
-                <div class="footer-item">
-                  <span>较昨日</span>
-                  <span class="green">
-                    16%
-                    <el-icon>
-                      <CaretTop />
-                    </el-icon>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-=======
 import { ref, onBeforeMount } from "vue";
-import { getApiUrlApi, generateApiUrlApi } from "@/api/mchmr/welcome/index";
+import {
+  getApiUrlApi,
+  generateApiUrlApi,
+  stateSwitchApi,
+  gteStateSwitchApi
+} from "@/api/mchmr/welcome/index";
 import { message } from "@/utils/message";
 
 const apiUrl = ref("");
+const isMaintain = ref(false);
 
 const getApiUrl = () => {
   getApiUrlApi().then(res => {
@@ -138,8 +55,27 @@ const generateApiUrl = () => {
   });
 };
 
+// const stateSwitch = () => {
+//   stateSwitchApi(isMaintain.value).then(res => {
+//     if (res.code === 0) {
+//       message("操作成功", {
+//         type: "success"
+//       });
+//     }
+//   });
+// };
+
+// const getStateSwitch = () => {
+//   gteStateSwitchApi().then(ref => {
+//     if (ref.code === 0) {
+//       isMaintain.value = ref.data.StateSwitch;
+//     }
+//   });
+// };
+
 onBeforeMount(() => {
   getApiUrl();
+  // getStateSwitch();
 });
 
 const copyApiUrl = () => {
@@ -158,8 +94,15 @@ const copyApiUrl = () => {
     <el-button :disabled="apiUrl !== null ? false : true" @click="copyApiUrl"
       >复制</el-button
     >
->>>>>>> Stashed changes
   </div>
+  <!-- <div>
+    <el-switch
+      v-model="isMaintain"
+      active-text="维护中"
+      inactive-text="未维护"
+      @change="stateSwitch"
+    />
+  </div> -->
 </template>
 
 <style>
