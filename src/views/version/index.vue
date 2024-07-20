@@ -300,7 +300,7 @@ const addVersionSubmit = () => {
         .catch(() => {
           addVersionVisible.value = false;
           createNewVersionDialog.value = false;
-          message("版本不能低于或等于活动版本", {
+          message("版本不能 ≤ 活动版本", {
             type: "warning"
           });
         });

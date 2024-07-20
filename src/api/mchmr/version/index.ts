@@ -1,5 +1,6 @@
 import { http } from "@/utils/http";
 import { ApiResponse } from "@/utils/http/apiResponse";
+import { TIMEOUT } from "dns";
 
 export interface VersionData {
   total: number;
@@ -48,6 +49,7 @@ export const getVersionListApi = (params?: VersionQuery) => {
 
 export const createVersionApi = (data: VersionCreate) => {
   return http.request<ApiResponse<VersionCreate>>("post", "/version/create", {
-    data
+    data,
+    timeout: 0
   });
 };

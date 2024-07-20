@@ -91,10 +91,10 @@ class PureHttp {
         return whiteList.some(v => config.url.endsWith(v))
           ? config
           : new Promise(resolve => {
-              const data = getToken();
-              config.headers["Authorization"] = formatToken(data.token);
-              resolve(config);
-            });
+            const data = getToken();
+            config.headers["Authorization"] = formatToken(data.token);
+            resolve(config);
+          });
       },
       error => {
         return Promise.reject(error);
