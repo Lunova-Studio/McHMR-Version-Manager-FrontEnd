@@ -8,7 +8,6 @@ export interface apiUrl {
 export interface StateSwitch {
   StateSwitch: boolean;
 }
-
 export const getApiUrlApi = () => {
   return http.request<ApiResponse<apiUrl>>("get", "/welcome/getApiUrl");
 };

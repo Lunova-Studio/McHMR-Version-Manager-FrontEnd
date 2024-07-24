@@ -105,7 +105,21 @@ const copyApiUrl = () => {
   </div> -->
 </template>
 
-<style>
+<style scoped lang="scss">
+.home_top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.top_card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+}
 .demonstration {
   color: var(--el-text-color-secondary);
 }
