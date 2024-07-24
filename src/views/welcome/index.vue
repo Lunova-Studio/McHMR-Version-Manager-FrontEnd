@@ -3,38 +3,91 @@ defineOptions({
   name: "Welcome"
 });
 import { ref, onBeforeMount } from "vue";
-import { getApiUrlApi, generateApiUrlApi } from "@/api/mchmr/welcome/index";
+import {
+  getApiUrlApi,
+  generateApiUrlApi,
+  stateSwitchApi,
+  gteStateSwitchApi
+} from "@/api/mchmr/welcome/index";
 import { message } from "@/utils/message";
 
-const apiUrl = ref(null);
+const apiUrl = ref("");
+const isMaintain = ref(false);
 
-const generateApiUrl = () => {
-  generateApiUrlApi().then(res => {
-    if (res.code === 200) {
-      message("操作成功", {
-        type: "success"
-      });
+const getApiUrl = () => {
+  getApiUrlApi().then(res => {
+    if (res.code === 0) {
+      apiUrl.value = res.data.apiUrl;
     }
   });
 };
 
-onBeforeMount(() => {
-  getApiUrlApi().then(res => {
-    if (res.code === 200) {
-      apiUrl.value = res.data.apiUrl;
+const generateApiUrl = () => {
+  let url = apiUrl.value;
+  if (url === null || url === "") {
+    const domain = window.location.host;
+    if (
+      !(
+        domain.indexOf("localhost") != -1 ||
+        domain.indexOf("127") != -1 ||
+        domain.indexOf("192.168") != -1
+      )
+    ) {
+      url = domain;
+    } else {
+      message(
+        "您当前访问的IP为内网IP，请在输入框中输入您的公网IP或使用公网IP访问以生成API地址",
+        {
+          type: "error"
+        }
+      );
+      return;
+    }
+  }
+  generateApiUrlApi(url).then(res => {
+    if (res.code === 0) {
+      message("操作成功,API地址已自动复制至剪切板", {
+        type: "success"
+      });
+      getApiUrl();
+      copyApiUrl();
     }
   });
+};
+
+// const stateSwitch = () => {
+//   stateSwitchApi(isMaintain.value).then(res => {
+//     if (res.code === 0) {
+//       message("操作成功", {
+//         type: "success"
+//       });
+//     }
+//   });
+// };
+
+// const getStateSwitch = () => {
+//   gteStateSwitchApi().then(ref => {
+//     if (ref.code === 0) {
+//       isMaintain.value = ref.data.StateSwitch;
+//     }
+//   });
+// };
+
+onBeforeMount(() => {
+  getApiUrl();
+  // getStateSwitch();
 });
 
-const copyApiUrl = () => {};
+const copyApiUrl = () => {
+  navigator.clipboard.writeText(apiUrl.value);
+};
 </script>
 
 <template>
   <div style="display: flex; flex-direction: row">
     <el-input
-      placeholder="请生成 Open API 地址"
+      placeholder="请输入您的公网IP地址"
       v-model="apiUrl"
-      :disabled="true"
       style="width: 500px; margin-right: 15px"
     />
     <el-button @click="generateApiUrl">生成</el-button>
@@ -42,6 +95,14 @@ const copyApiUrl = () => {};
       >复制</el-button
     >
   </div>
+  <!-- <div>
+    <el-switch
+      v-model="isMaintain"
+      active-text="维护中"
+      inactive-text="未维护"
+      @change="stateSwitch"
+    />
+  </div> -->
 </template>
 
 <style scoped lang="scss">
