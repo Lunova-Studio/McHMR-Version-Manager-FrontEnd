@@ -136,8 +136,9 @@ const {
   max-width: 120px;
 
   ::v-deep(.el-dropdown-menu__item) {
-    display: inline-flex;
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     min-width: 100%;
   }
 }

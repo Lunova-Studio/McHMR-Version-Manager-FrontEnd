@@ -26,7 +26,7 @@ const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
   timeout: 10000,
   // 后端请求地址
-  baseURL: VITE_APP_BASE_API,
+  baseURL: window.webConfig.webApiBaseUrl,
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",

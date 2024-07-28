@@ -193,43 +193,43 @@
             >
               <img
                 v-if="scope.row.fileType === 'folder'"
-                src="../../assets/svg/folder.svg"
+                :src="folderImg"
                 alt="文件夹"
                 style="width: 32px; height: 32px; transform: translateY(-3px)"
               />
               <img
                 v-else-if="scope.row.fileType === 'document'"
-                src="../../assets/svg/document.svg"
+                :src="txtImg"
                 alt="文本文件"
                 style="width: 32px; height: 32px"
               />
               <img
                 v-else-if="scope.row.fileType === 'image'"
-                src="../../assets/svg/image.svg"
+                :src="imgImg"
                 alt="图片文件"
                 style="width: 32px; height: 32px"
               />
               <img
                 v-else-if="scope.row.fileType === 'zip'"
-                src="../../assets/svg/zip.svg"
+                :src="zipImg"
                 alt="zip文件"
                 style="width: 32px; height: 32px"
               />
               <img
                 v-else-if="scope.row.fileType === 'jar'"
-                src="../../assets/svg/jar.svg"
+                :src="jarImg"
                 alt="jar文件"
                 style="width: 32px; height: 32px"
               />
               <img
                 v-else-if="scope.row.fileType === 'exe'"
-                src="../../assets/svg/exe.svg"
+                :src="exeImg"
                 alt="Windows可执行文件"
                 style="width: 32px; height: 32px"
               />
               <img
                 v-else
-                src="../../assets/svg/unknown.svg"
+                :src="unkImg"
                 alt="未知文件"
                 style="width: 32px; height: 32px"
               />
@@ -260,7 +260,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="permission" label="权限" width="100" />
-        <el-table-column prop="modifyDate" label="修改日期" width="200" />
+        <el-table-column prop="modifyDate" label="修改日期" width="200">
+          <template v-slot="scope">
+            <span>{{ formatDateTime(scope.row.modifyDate) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="fileType" label="类型" width="180">
           <template v-slot="scope">
             <span v-if="scope.row.fileType === 'folder'">文件夹</span>
@@ -279,7 +283,7 @@
             <span>{{ formatFileSize(scope.row.fileSize) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="right">
+        <el-table-column label="操作" align="right" fixed="right">
           <template v-slot="scope">
             <div class="enterElement" v-if="scope.row.showBtn">
               <el-button type="danger" link @click="confirmDelete(scope.row)"
@@ -334,6 +338,15 @@ import {
 } from "@/api/mchmr/gameManager";
 import { message } from "@/utils/message";
 
+// 图片资源
+import folderImg from "@/assets/svg/folder.svg?url";
+import txtImg from "@/assets/svg/document.svg?url";
+import imgImg from "@/assets/svg/image.svg?url";
+import zipImg from "@/assets/svg/zip.svg?url";
+import jarImg from "@/assets/svg/jar.svg?url";
+import exeImg from "@/assets/svg/exe.svg?url";
+import unkImg from "@/assets/svg/unknown.svg?url";
+
 const tableData = ref(null);
 const total = ref(0);
 const folderNum = ref(0);
@@ -366,6 +379,16 @@ const submitUpload = () => {
 defineOptions({
   name: "GameFileManager"
 });
+
+// 时间格式
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const formattedDate = date
+    .toISOString()
+    .replace("T", " ")
+    .replace(/\.\d+Z/, "");
+  return formattedDate;
+};
 
 const checkedFile = async (option: UploadRequestOptions) => {
   if (option.file.size > 2 * 1024 * 1024 * 1024) {
@@ -562,13 +585,28 @@ const createFolder = () => {
     fileName: "New Folder",
     showBtn: false,
     fileType: "folder",
+    modifyDate: getCurrentDate(),
     isRename: true,
     fileSize: 0
   };
+
   oldName.value = "New Folder";
   isCreateFolder.value = true;
   tableData.value.push(item);
 };
+
+const getCurrentDate = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hour = date.getHours().toString().padStart(2, "0");
+  const minute = date.getMinutes().toString().padStart(2, "0");
+  const second = date.getSeconds().toString().padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  return formattedDate;
+};
+
 const downloadFile = () => {
   downloadDialog.value = true;
 };

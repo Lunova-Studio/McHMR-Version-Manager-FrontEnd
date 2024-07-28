@@ -17,8 +17,8 @@ const wrapperEnv = (envConfigs: Recordable): ViteEnv => {
       realConfigValue === "true"
         ? true
         : realConfigValue === "false"
-        ? false
-        : realConfigValue;
+          ? false
+          : realConfigValue;
 
     if (configName === "VITE_PORT") {
       realConfigValue = Number(realConfigValue);
