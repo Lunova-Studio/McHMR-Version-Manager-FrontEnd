@@ -34,7 +34,13 @@ onBeforeMount(() => {
 });
 
 const copyApiUrl = () => {
-  navigator.clipboard.writeText(apiUrl.value);
+  try {
+    navigator.clipboard.writeText(apiUrl.value);
+  } catch {
+    message("复制失败，请手动复制", {
+      type: "error"
+    });
+  }
 };
 </script>
 
