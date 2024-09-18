@@ -23,6 +23,29 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row :gutter="20">
+      <el-col :span="24" :xs="24">
+        <el-card>
+          <template v-slot:header>
+            <div class="clearfix">
+              <span>服务端设置</span>
+            </div>
+          </template>
+          <el-form ref="serverConfigRef" :model="serverIp" :rules="rules">
+            <el-form-item label="服务器地址" prop="serverIp" width="100px">
+              <el-input
+                v-model="serverIp"
+                placeholder="请输入服务器地址"
+                type="text"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submiServerIp">保存</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </el-col>
+    </el-row>
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :span="24" :xs="24">
         <el-card>
@@ -64,8 +87,10 @@ import {
   getServerManagerApi,
   updateServerManagerApi,
   getWhitelistApi,
-  updateWhitelistApi
-} from "@/api/mchmr/serverManager/index";
+  updateWhitelistApi,
+  getServerIpApi,
+  updateServerIpApi
+} from "@/api/mchmr/serverManager";
 import { message } from "@/utils/message";
 
 const serverConfigRef = ref();
@@ -84,6 +109,7 @@ const server = reactive<ServerManager>({
 const whitelist = reactive<Whitelist>({
   path: undefined
 });
+const serverIp = ref(undefined);
 
 defineOptions({
   name: "ServerManager"
@@ -96,6 +122,9 @@ onBeforeMount(() => {
   });
   getWhitelistApi().then((res: any) => {
     whitelist.path = res.data.path;
+  });
+  getServerIpApi().then((res: any) => {
+    serverIp.value = res.data;
   });
 });
 
@@ -115,6 +144,18 @@ function submitWhitelist() {
   serverConfigRef.value.validate(valid => {
     if (valid) {
       updateWhitelistApi(whitelist).then(() => {
+        message("设置成功", {
+          type: "success"
+        });
+      });
+    }
+  });
+}
+
+function submiServerIp() {
+  serverConfigRef.value.validate(valid => {
+    if (valid) {
+      updateServerIpApi(serverIp.value).then(() => {
         message("设置成功", {
           type: "success"
         });
