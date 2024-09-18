@@ -28,3 +28,11 @@ export const getWhitelistApi = () => {
 export const updateWhitelistApi = (data: Whitelist) => {
   return http.request("post", "/server/whitelist", { data });
 };
+
+export const updateServerIpApi = (data: ServerIp) => {
+  return http.request("post", "/server/serverIp", { data });
+};
+
+export const getServerIpApi = () => {
+  return http.request<String>("get", "/server/serverIp");
+};
