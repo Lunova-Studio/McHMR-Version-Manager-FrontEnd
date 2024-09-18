@@ -54,9 +54,12 @@
     <!-- 远程下载弹窗 -->
     <el-dialog
       v-model="downloadDialog"
-      title="远程下载（该功能暂未上线）"
+      title="远程下载"
       width="500"
       align-center
+      :closeOnClickModal="false"
+      :closeOnPressEscape="false"
+      :showClose="!downloadLoading"
     >
       <div>
         <el-input
@@ -66,13 +69,40 @@
         />
 
         <el-text class="mx-1" type="warning"
-          >远程下载受到部署服务器地区影响，下载速度可能有所差异</el-text
+          >远程下载受到部署服务器地区和服务器带宽影响，下载速度可能有所差异。<br
+        /></el-text>
+        <el-text class="mx-1" type="warning"
+          >部分网站限制了下载，远程下载功能使用简单的请求去下载，可能会提示操作失败，这种情况请自行下载后上传。</el-text
         >
+        <div v-if="downloadStatus.isDown">
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+            "
+          >
+            <el-text class="mx-1">{{ downloadStatus.speed }}</el-text>
+            <el-text class="mx-1">{{ downloadStatus.progress }}</el-text>
+          </div>
+          <el-progress
+            :percentage="downloadStatus.progress"
+            :show-text="false"
+          />
+        </div>
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="downloadDialog = false">取消</el-button>
-          <el-button type="primary" @click="submitDownload"> 下载 </el-button>
+          <el-button @click="downloadDialog = false" :disabled="downloadLoading"
+            >取消</el-button
+          >
+          <el-button
+            type="primary"
+            @click="submitDownload"
+            :loading="downloadLoading"
+          >
+            下载
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -134,7 +164,7 @@
         <el-input
           v-model="searchQuery.keyWord"
           style="width: 400px"
-          placeholder="输入搜索当前目录的文件夹 / 文件"
+          placeholder="输入搜索当前目录的文件夹 / 文件名称"
           class="input-with-select"
         >
           <template #append>
@@ -334,7 +364,8 @@ import {
   moveFileApi,
   uploadApi,
   isUploadApi,
-  unZipApi
+  unZipApi,
+  downloadApi
 } from "@/api/mchmr/gameManager";
 import { message } from "@/utils/message";
 
@@ -361,6 +392,7 @@ const deleteFilesCache = ref([]);
 const moveFilesChache = ref([]);
 const moveStatus = ref(false);
 const downloadDialog = ref(false);
+const downloadLoading = ref(false);
 const downloadUrl = ref(null);
 const isCreateFolder = ref(false);
 const uploadDialog = ref(false);
@@ -560,7 +592,31 @@ onMounted(() => {
   });
 });
 
-const submitDownload = () => {};
+const downloadStatus = ref({
+  isDown: false,
+  speed: 0,
+  progress: 0
+});
+
+const submitDownload = async () => {
+  downloadLoading.value = true;
+  await downloadApi({ fileUrl: downloadUrl.value, path: buildPath() })
+    .then((res: any) => {
+      console.log(res);
+      if (res.code === 0) {
+        message("下载成功", {
+          type: "success"
+        });
+        downloadDialog.value = false;
+        downloadLoading.value = false;
+        downloadUrl.value = null;
+        refreshList();
+      }
+    })
+    .catch(() => {
+      downloadLoading.value = false;
+    });
+};
 
 const unzip = (row: any) => {
   unzipDialog.value = true;

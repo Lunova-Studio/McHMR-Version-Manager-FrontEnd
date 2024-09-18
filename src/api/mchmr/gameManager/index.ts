@@ -40,14 +40,19 @@ export interface FolderCreateRequest {
   folderName: string;
 }
 
-export interface isUploadRequest {
+export interface IsUploadRequest {
   fileName: string;
   path: string;
 }
 
-export interface unZipRequest {
+export interface UnZipRequest {
   path: string;
   targetFile: string;
+}
+
+export interface DownloadRequest {
+  fileUrl: string;
+  path: string;
 }
 
 export const getGameFileListApi = (params: GameFileListQuery) => {
@@ -78,10 +83,14 @@ export const uploadApi = (data: any, config: any) => {
   return http.upload("/game/upload", { data }, { config });
 };
 
-export const isUploadApi = (params: isUploadRequest) => {
+export const isUploadApi = (params: IsUploadRequest) => {
   return http.request("get", "/game/isUpload", { params });
 };
 
-export const unZipApi = (params: unZipRequest) => {
+export const unZipApi = (params: UnZipRequest) => {
   return http.unzip("/game/unZip", { params });
+};
+
+export const downloadApi = (data: DownloadRequest) => {
+  return http.post("/game/download", { data }, { timeout: 0 });
 };
