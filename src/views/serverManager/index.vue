@@ -28,7 +28,7 @@
         <el-card>
           <template v-slot:header>
             <div class="clearfix">
-              <span>服务端设置</span>
+              <span>游戏服务器设置</span>
             </div>
           </template>
           <el-form ref="serverConfigRef" :model="serverIp" :rules="rules">
@@ -38,6 +38,11 @@
                 placeholder="请输入服务器地址"
                 type="text"
               />
+            </el-form-item>
+            <el-form-item>
+              <p>
+                填写游戏服务器地址，可在主页中查看服务器状态信息，或者启动器管理中，开启游戏启动直接进入的服务器
+              </p>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submiServerIp">保存</el-button>
