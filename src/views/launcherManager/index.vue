@@ -21,17 +21,26 @@
                 class="avatar-uploader"
                 action="#"
                 :show-file-list="false"
-                :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload"
                 :multiple="false"
                 :http-request="submitBg"
+                style="width: 400px; height: 225px"
               >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <img
+                  v-if="imageUrl"
+                  :src="imageUrl"
+                  class="avatar"
+                  style="width: 400px; height: 225px"
+                />
                 <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
               </el-upload>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submitBg">提交</el-button>
+              <el-button type="primary" @click="submitBgSave">提交</el-button>
+              <span style="margin-left: 10px"
+                >tips:
+                提交后才能正常显示，如果启用启动器背景功能，不设置图像，会显示默认背景，不启用则不会显示背景。</span
+              >
             </el-form-item>
           </el-form>
         </el-card>
@@ -41,10 +50,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
-import { uploadBackgroundApi } from "@/api/mchmr/launcherManager";
+import {
+  uploadBackgroundApi,
+  saveBackgroudApi,
+  getBackgroundApi
+} from "@/api/mchmr/launcherManager";
 
 import type { UploadProps, UploadRequestOptions } from "element-plus";
 
@@ -61,16 +74,6 @@ const hasBg = ref(true);
 
 const imageUrl = ref("");
 
-const handleAvatarSuccess: UploadProps["onSuccess"] = (
-  response,
-  uploadFile
-) => {
-  console.log(response);
-  console.log(uploadFile);
-
-  imageUrl.value = URL.createObjectURL(response.data.data);
-};
-
 const beforeAvatarUpload: UploadProps["beforeUpload"] = rawFile => {
   if (rawFile.type !== "image/jpeg") {
     ElMessage.error("只能上传 JPG 格式的图片");
@@ -83,10 +86,36 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = rawFile => {
 };
 
 const submitBg = async (option: UploadRequestOptions) => {
-  await uploadBackgroundApi(option.file).then(res => {
-    console.log(res);
+  const formData = new FormData();
+  formData.append("file", option.file);
+  await uploadBackgroundApi(formData).then((res: any) => {
+    imageUrl.value = res.data;
   });
 };
+
+const submitBgSave = () => {
+  const data: any = {
+    hasBackground: hasBg.value === true ? 1 : 0,
+    backgroundUrl: imageUrl.value
+  };
+
+  saveBackgroudApi(data).then((res: any) => {
+    if (res.code === 0) {
+      ElMessage.success("保存成功");
+    } else {
+      ElMessage.error("保存失败，请重新尝试");
+    }
+  });
+};
+
+onMounted(() => {
+  getBackgroundApi().then((res: any) => {
+    console.log(res);
+    if (res.data !== null) {
+      imageUrl.value = res.data.backgroundUrl;
+    }
+  });
+});
 </script>
 
 <style scoped>

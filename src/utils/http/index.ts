@@ -296,24 +296,6 @@ class PureHttp {
     });
   }
 
-  public uploadImg<T, P>(
-    url: string,
-    params: AxiosRequestConfig<T>,
-    config: any
-  ): Promise<P> {
-    const formData = new FormData();
-    // Assuming 'params.data' contains the file
-    formData.append('file', params);
-
-    return this.request("post", url, formData, {
-      headers: {
-        // Don't set Content-Type manually, Axios will handle it
-        // "Content-Type": "multipart/form-data"
-      },
-      onUploadProgress: config.onUploadProgress
-    });
-  }
-
 
   // .post(url, params, {
   //   transformRequest: [params => encodeURIParams(params)],

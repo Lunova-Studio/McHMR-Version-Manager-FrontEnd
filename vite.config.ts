@@ -53,6 +53,11 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
           target: "http://localhost:8080",
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, "")
+        },
+        "/images": {
+          target: "http://localhost:8080/images",
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/images/, "")
         }
       }
     },
