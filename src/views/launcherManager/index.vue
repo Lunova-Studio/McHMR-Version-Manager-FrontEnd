@@ -39,7 +39,7 @@
               <el-button type="primary" @click="submitBgSave">提交</el-button>
               <span style="margin-left: 10px"
                 >tips:
-                提交后才能正常显示，如果启用启动器背景功能，不设置图像，会显示默认背景，不启用则不会显示背景。</span
+                提交后才能正常显示，如果启用启动器背景功能，不设置图像，会显示默认背景，不启用则不会显示背景。背景图比例建议：800x450</span
               >
             </el-form-item>
           </el-form>
