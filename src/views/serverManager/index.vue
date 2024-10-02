@@ -31,7 +31,7 @@
               <span>游戏服务器设置</span>
             </div>
           </template>
-          <el-form ref="serverConfigRef" :model="serverIp" :rules="rules">
+          <el-form ref="serverIpConfig" :model="serverIp" :rules="rules">
             <el-form-item label="服务器地址" prop="serverIp" width="100px">
               <el-input
                 v-model="serverIp"
@@ -100,6 +100,7 @@ import { message } from "@/utils/message";
 
 const serverConfigRef = ref();
 const clientWhiteList = ref();
+const serverIpConfig = ref();
 
 const rules = ref({
   serverName: [
@@ -158,6 +159,7 @@ function submitWhitelist() {
 }
 
 function submiServerIp() {
+  console.log(serverConfigRef);
   serverConfigRef.value.validate(valid => {
     if (valid) {
       updateServerIpApi(serverIp.value).then(() => {
