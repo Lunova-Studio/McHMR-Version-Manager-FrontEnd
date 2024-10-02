@@ -113,6 +113,7 @@ onMounted(() => {
     console.log(res);
     if (res.data !== null) {
       imageUrl.value = res.data.backgroundUrl;
+      hasBg.value = res.data.hasBackground === 1;
     }
   });
 });
