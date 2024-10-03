@@ -32,3 +32,11 @@ export const saveBackgroudApi = (data: any) => {
 export const getBackgroundApi = () => {
   return http.get("/launcher/background");
 };
+
+export const getDownloadModeApi = () => {
+  return http.get("/launcher/getDownloadMode");
+};
+
+export const setDownloadModeApi = (data: number) => {
+  return http.post("/launcher/setDownloadMode", { data });
+};
