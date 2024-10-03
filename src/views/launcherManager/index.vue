@@ -46,6 +46,28 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row :gutter="20" style="margin-top: 20px">
+      <el-col :span="24" :xs="24">
+        <el-card>
+          <template v-slot:header>
+            <div class="clearfix">
+              <span>启动器更新模式管理</span>
+            </div>
+          </template>
+          <el-form>
+            <el-form-item label="是否启用增量包模式">
+              <el-switch v-model="hasIncremental" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitMode">提交</el-button>
+              <span style="margin-left: 10px"
+                >tips:增量包模式会大量占用系统IO性能，不建议启用。关闭后使用多文件下载会大量占用服务器带宽，请根据实际情况择优选择()</span
+              >
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -56,7 +78,9 @@ import { Plus } from "@element-plus/icons-vue";
 import {
   uploadBackgroundApi,
   saveBackgroudApi,
-  getBackgroundApi
+  getBackgroundApi,
+  getDownloadModeApi,
+  setDownloadModeApi
 } from "@/api/mchmr/launcherManager";
 
 import type { UploadProps, UploadRequestOptions } from "element-plus";
@@ -71,6 +95,8 @@ const launcherBackground = {
 };
 
 const hasBg = ref(true);
+
+const hasIncremental = ref(false);
 
 const imageUrl = ref("");
 
@@ -108,6 +134,16 @@ const submitBgSave = () => {
   });
 };
 
+const submitMode = () => {
+  setDownloadModeApi(hasIncremental.value ? 1 : 0).then((res: any) => {
+    if (res.code === 0) {
+      ElMessage.success("保存成功");
+    } else {
+      ElMessage.error("保存失败，请重新尝试");
+    }
+  });
+};
+
 onMounted(() => {
   getBackgroundApi().then((res: any) => {
     console.log(res);
@@ -115,6 +151,9 @@ onMounted(() => {
       imageUrl.value = res.data.backgroundUrl;
       hasBg.value = res.data.hasBackground === 1;
     }
+  });
+  getDownloadModeApi().then((res: any) => {
+    hasIncremental.value = res.data === 1;
   });
 });
 </script>
