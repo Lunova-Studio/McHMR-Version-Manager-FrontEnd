@@ -9,7 +9,7 @@
             </div>
           </template>
           <el-form ref="serverConfigRef" :model="launcherBackground">
-            <el-form-item label="是否启用启动器背景" prop="hasBackground">
+            <el-form-item label="启用启动器背景" prop="hasBackground">
               <el-switch v-model="hasBg" />
             </el-form-item>
             <el-form-item
@@ -55,13 +55,14 @@
             </div>
           </template>
           <el-form>
-            <el-form-item label="是否启用增量包模式">
+            <el-form-item label="启用增量包模式">
               <el-switch v-model="hasIncremental" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitMode">提交</el-button>
               <span style="margin-left: 10px"
-                >tips:增量包模式会大量占用系统IO性能，不建议启用。关闭后使用多文件下载会大量占用服务器带宽，请根据实际情况择优选择()</span
+                >tips:
+                增量包模式会大量占用系统IO性能，多文件模式会占用大量服务器带宽，请根据实际情况择优选择启动器/更新器下载模式。</span
               >
             </el-form-item>
           </el-form>
