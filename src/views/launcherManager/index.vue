@@ -54,16 +54,29 @@
               <span>启动器更新模式管理</span>
             </div>
           </template>
-          <el-form>
-            <el-form-item label="启用增量包模式">
-              <el-switch v-model="hasIncremental" />
-            </el-form-item>
+          <el-form ref="UpdateModeConfig" :model="UpdateMode">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="启用增量包模式">
+                  <el-switch v-model="UpdateMode.DownloadMode" />
+                </el-form-item>
+                <span class="tips">
+                  tips:
+                  增量包模式会大量占用系统IO性能，多文件模式会占用大量服务器带宽，请根据实际情况择优选择启动器/更新器下载模式。
+                </span>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="启用严格模式">
+                  <el-switch v-model="UpdateMode.UpdateMode" />
+                </el-form-item>
+                <span class="tips">
+                  tips:
+                  严格模式，即客户端每次启动后都会进行更新校验。会增加客户端的资源消耗一定程度上增加服务端负担。
+                </span>
+              </el-col>
+            </el-row>
             <el-form-item>
               <el-button type="primary" @click="submitMode">提交</el-button>
-              <span style="margin-left: 10px"
-                >tips:
-                增量包模式会大量占用系统IO性能，多文件模式会占用大量服务器带宽，请根据实际情况择优选择启动器/更新器下载模式。</span
-              >
             </el-form-item>
           </el-form>
         </el-card>
@@ -73,15 +86,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import {
+  UpdateMode,
   uploadBackgroundApi,
   saveBackgroudApi,
   getBackgroundApi,
-  getDownloadModeApi,
-  setDownloadModeApi
+  getUpdateModeApi,
+  setUpdateModeApi
 } from "@/api/mchmr/launcherManager";
 
 import type { UploadProps, UploadRequestOptions } from "element-plus";
@@ -90,6 +104,8 @@ defineOptions({
   name: "LauncherManager"
 });
 
+const UpdateModeConfig = ref();
+
 const launcherBackground = {
   hasBg: null,
   background: null
@@ -97,7 +113,11 @@ const launcherBackground = {
 
 const hasBg = ref(true);
 
-const hasIncremental = ref(false);
+// eslint-disable-next-line no-import-assign,no-redeclare
+const UpdateMode = reactive<UpdateMode>({
+  DownloadMode: 1,
+  UpdateMode: 0
+});
 
 const imageUrl = ref("");
 
@@ -136,7 +156,7 @@ const submitBgSave = () => {
 };
 
 const submitMode = () => {
-  setDownloadModeApi(hasIncremental.value ? 1 : 0).then((res: any) => {
+  setUpdateModeApi(hasIncremental.value ? 1 : 0).then((res: any) => {
     if (res.code === 0) {
       ElMessage.success("保存成功");
     } else {
@@ -153,8 +173,10 @@ onMounted(() => {
       hasBg.value = res.data.hasBackground === 1;
     }
   });
-  getDownloadModeApi().then((res: any) => {
-    hasIncremental.value = res.data === 1;
+  getUpdateModeApi().then((res: any) => {
+    console.log(res.data);
+    UpdateMode.DownloadMode = res.data.downloadMode === 1;
+    UpdateMode.UpdateMode = res.data.updateMode === 1;
   });
 });
 </script>
@@ -164,6 +186,19 @@ onMounted(() => {
   width: 178px;
   height: 178px;
   display: block;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.tips {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #333;
 }
 </style>
 <style>
@@ -186,5 +221,18 @@ onMounted(() => {
   width: 178px;
   height: 178px;
   text-align: center;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.tips {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #999;
 }
 </style>
