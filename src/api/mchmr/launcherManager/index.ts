@@ -1,5 +1,10 @@
 import { http } from "@/utils/http";
 
+export interface UpdateMode {
+  DownloadMode: number;
+  UpdateMode: number;
+}
+
 export const uploadBackgroundApi = (data: FormData) => {
   return http.request(
     "post",
@@ -33,10 +38,10 @@ export const getBackgroundApi = () => {
   return http.get("/launcher/background");
 };
 
-export const getDownloadModeApi = () => {
-  return http.get("/launcher/getDownloadMode");
+export const getUpdateModeApi = () => {
+  return http.request<UpdateMode>("get", "/launcher/getDownloadMode");
 };
 
-export const setDownloadModeApi = (data: number) => {
-  return http.post("/launcher/setDownloadMode", { data });
+export const setUpdateModeApi = (data: UpdateMode) => {
+  return http.request("post", "/launcher/setDownloadMode", { data });
 };
