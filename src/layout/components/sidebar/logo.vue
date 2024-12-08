@@ -20,7 +20,9 @@ const { title } = useNav();
         :to="getTopMenu()?.path ?? '/'"
       >
         <img src="/logo.svg" alt="logo" />
-        <span class="sidebar-title">McHMR</span>
+        <span class="sidebar-title"
+          >McHMR<span class="version-number">v1.0.5</span></span
+        >
       </router-link>
       <router-link
         v-else
@@ -30,7 +32,9 @@ const { title } = useNav();
         :to="getTopMenu()?.path ?? '/'"
       >
         <img src="/logo.svg" alt="logo" />
-        <span class="sidebar-title">McHMR</span>
+        <span class="sidebar-title"
+          >McHMR<span class="version-number">v1.0.5</span></span
+        >
       </router-link>
     </transition>
   </div>
@@ -65,6 +69,12 @@ const { title } = useNav();
       color: $subMenuActiveText;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .version-number {
+      font-size: 12px;
+      vertical-align: top;
+      margin-left: 8px;
     }
   }
 }

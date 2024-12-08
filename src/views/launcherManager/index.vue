@@ -58,7 +58,7 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="启用增量包模式">
-                  <el-switch v-model="UpdateMode.DownloadMode" />
+                  <el-switch v-model="UpdateMode.downloadMode" />
                 </el-form-item>
                 <span class="tips">
                   tips:
@@ -67,7 +67,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="启用严格模式">
-                  <el-switch v-model="UpdateMode.UpdateMode" />
+                  <el-switch v-model="UpdateMode.updateMode" />
                 </el-form-item>
                 <span class="tips">
                   tips:
@@ -115,8 +115,8 @@ const hasBg = ref(true);
 
 // eslint-disable-next-line no-import-assign,no-redeclare
 const UpdateMode = reactive<UpdateMode>({
-  DownloadMode: 1,
-  UpdateMode: 0
+  downloadMode: 0,
+  updateMode: 0
 });
 
 const imageUrl = ref("");
@@ -156,7 +156,11 @@ const submitBgSave = () => {
 };
 
 const submitMode = () => {
-  setUpdateModeApi(hasIncremental.value ? 1 : 0).then((res: any) => {
+  const data: any = {
+    downloadMode: UpdateMode.downloadMode ? 1 : 0,
+    updateMode: UpdateMode.updateMode ? 1 : 0
+  };
+  setUpdateModeApi(data).then((res: any) => {
     if (res.code === 0) {
       ElMessage.success("保存成功");
     } else {
@@ -174,9 +178,8 @@ onMounted(() => {
     }
   });
   getUpdateModeApi().then((res: any) => {
-    console.log(res.data);
-    UpdateMode.DownloadMode = res.data.downloadMode === 1;
-    UpdateMode.UpdateMode = res.data.updateMode === 1;
+    UpdateMode.downloadMode = res.data.downloadMode === 1;
+    UpdateMode.updateMode = res.data.updateMode === 1;
   });
 });
 </script>
