@@ -90,12 +90,13 @@ import { onMounted, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import {
-  UpdateMode,
   uploadBackgroundApi,
   saveBackgroudApi,
   getBackgroundApi,
   getUpdateModeApi,
-  setUpdateModeApi
+  setUpdateModeApi,
+  getDownloadModeApi,
+  setDownloadModeApi
 } from "@/api/mchmr/launcherManager";
 
 import type { UploadProps, UploadRequestOptions } from "element-plus";
@@ -114,9 +115,9 @@ const launcherBackground = {
 const hasBg = ref(true);
 
 // eslint-disable-next-line no-import-assign,no-redeclare
-const UpdateMode = reactive<UpdateMode>({
-  downloadMode: 0,
-  updateMode: 0
+const UpdateMode = ref({
+  downloadMode: false,
+  updateMode: false
 });
 
 const imageUrl = ref("");
@@ -156,17 +157,25 @@ const submitBgSave = () => {
 };
 
 const submitMode = () => {
-  const data: any = {
-    downloadMode: UpdateMode.downloadMode ? 1 : 0,
-    updateMode: UpdateMode.updateMode ? 1 : 0
-  };
-  setUpdateModeApi(data).then((res: any) => {
-    if (res.code === 0) {
-      ElMessage.success("保存成功");
-    } else {
-      ElMessage.error("保存失败，请重新尝试");
-    }
-  });
+  let UpdateCode;
+  let DownloadCode;
+  Promise.all([
+    setUpdateModeApi(UpdateMode.value.updateMode ? 1 : 0),
+    setDownloadModeApi(UpdateMode.value.downloadMode ? 1 : 0)
+  ])
+    .then(([updateRes, downloadRes]) => {
+      UpdateCode = updateRes.code;
+      DownloadCode = downloadRes.code;
+      if (UpdateCode === 0 && DownloadCode === 0) {
+        ElMessage.success("保存成功");
+      } else {
+        ElMessage.error("保存失败，请重新尝试");
+      }
+    })
+    .catch(error => {
+      console.error("API调用失败", error);
+      ElMessage.error("API调用失败");
+    });
 };
 
 onMounted(() => {
@@ -178,8 +187,10 @@ onMounted(() => {
     }
   });
   getUpdateModeApi().then((res: any) => {
-    UpdateMode.downloadMode = res.data.downloadMode === 1;
-    UpdateMode.updateMode = res.data.updateMode === 1;
+    UpdateMode.value.updateMode = res.data === 1;
+  });
+  getDownloadModeApi().then((res: any) => {
+    UpdateMode.value.downloadMode = res.data === 1;
   });
 });
 </script>
