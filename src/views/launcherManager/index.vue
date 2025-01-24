@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import {
@@ -119,6 +119,7 @@ const UpdateMode = ref({
   downloadMode: false,
   updateMode: false
 });
+
 
 const imageUrl = ref("");
 

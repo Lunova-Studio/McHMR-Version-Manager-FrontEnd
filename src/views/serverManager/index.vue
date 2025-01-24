@@ -56,6 +56,29 @@
         <el-card>
           <template v-slot:header>
             <div class="clearfix">
+              <span>服务器登录限制管理</span>
+            </div>
+          </template>
+          <el-form ref="CheckModeConfig">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="启用IP校验">
+                  <el-switch v-model="IpCheck" @click="submiIpCheck" />
+                </el-form-item>
+                <p>
+                  若启用同一IP的客户端在十分钟内只能登录一次，请根据实际情况进行设置。
+                </p>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20" style="margin-top: 20px">
+      <el-col :span="24" :xs="24">
+        <el-card>
+          <template v-slot:header>
+            <div class="clearfix">
               <span>更新白名单</span>
             </div>
           </template>
@@ -94,13 +117,14 @@ import {
   getWhitelistApi,
   updateWhitelistApi,
   getServerIpApi,
-  updateServerIpApi
+  updateServerIpApi,
+  getIpCheckApi,
+  setIpCheckApi
 } from "@/api/mchmr/serverManager";
 import { message } from "@/utils/message";
 
 const serverConfigRef = ref();
 const clientWhiteList = ref();
-const serverIpConfig = ref();
 
 const rules = ref({
   serverName: [
@@ -121,6 +145,8 @@ defineOptions({
   name: "ServerManager"
 });
 
+const IpCheck = ref(false);
+
 // 获取服务器名称
 onBeforeMount(() => {
   getServerManagerApi().then((res: any) => {
@@ -131,6 +157,9 @@ onBeforeMount(() => {
   });
   getServerIpApi().then((res: any) => {
     serverIp.value = res.data;
+  });
+  getIpCheckApi().then((res: any) => {
+    IpCheck.value = res.data === 1;
   });
 });
 
@@ -159,15 +188,18 @@ function submitWhitelist() {
 }
 
 function submiServerIp() {
-  console.log(serverConfigRef);
-  serverConfigRef.value.validate(valid => {
-    if (valid) {
-      updateServerIpApi(serverIp.value).then(() => {
-        message("设置成功", {
-          type: "success"
-        });
-      });
-    }
+  updateServerIpApi(serverIp.value).then(() => {
+    message("设置成功", {
+      type: "success"
+    });
+  });
+}
+
+function submiIpCheck() {
+  setIpCheckApi(IpCheck.value ? 1 : 0).then(() => {
+    message("设置成功", {
+      type: "success"
+    });
   });
 }
 </script>
