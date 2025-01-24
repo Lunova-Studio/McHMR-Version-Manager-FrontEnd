@@ -36,3 +36,11 @@ export const updateServerIpApi = (data: ServerIp) => {
 export const getServerIpApi = () => {
   return http.request<String>("get", "/server/serverIp");
 };
+
+export const getIpCheckApi = () => {
+  return http.get("/server/getIpCheck");
+};
+
+export const setIpCheckApi = (data: number) => {
+  return http.post("/server/setIpCheck", { data });
+};
